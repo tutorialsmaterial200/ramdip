@@ -1,63 +1,31 @@
-import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
-import Gallery from "@/models/Gallery";
+import { NextRequest, NextResponse } from 'next/server'
+import dbConnect from '@/lib/mongoose'
+import Gallery from '@/models/Gallery'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    await dbConnect();
-    const { id } = await params;
-    const item = await Gallery.findById(id);
+    await dbConnect()
+    const body = await request.json()
     
-    if (!item) {
-      return NextResponse.json({ error: "Gallery item not found" }, { status: 404 });
-    }
+    const item = await Gallery.findByIdAndUpdate(
+      params.id,
+      body,
+      { new: true }
+    )
     
-    return NextResponse.json(item);
+    return NextResponse.json({ success: true, data: item })
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch gallery item" }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Failed to update gallery item' }, { status: 500 })
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    await dbConnect();
-    const { id } = await params;
-    const data = await request.json();
+    await dbConnect()
     
-    const item = await Gallery.findByIdAndUpdate(id, data, { new: true });
-    
-    if (!item) {
-      return NextResponse.json({ error: "Gallery item not found" }, { status: 404 });
-    }
-    
-    return NextResponse.json(item);
+    await Gallery.findByIdAndDelete(params.id)
+    return NextResponse.json({ success: true })
   } catch (error) {
-    return NextResponse.json({ error: "Failed to update gallery item" }, { status: 500 });
-  }
-}
-
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    await dbConnect();
-    const { id } = await params;
-    
-    const item = await Gallery.findByIdAndDelete(id);
-    
-    if (!item) {
-      return NextResponse.json({ error: "Gallery item not found" }, { status: 404 });
-    }
-    
-    return NextResponse.json({ message: "Gallery item deleted" });
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to delete gallery item" }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Failed to delete gallery item' }, { status: 500 })
   }
 }

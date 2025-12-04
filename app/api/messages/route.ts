@@ -1,33 +1,33 @@
-import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
-import Message from "@/models/Message";
+import { NextRequest, NextResponse } from 'next/server'
+import dbConnect from '@/lib/mongoose'
+import Message from '@/models/Message'
 
 export async function GET() {
   try {
-    await dbConnect();
-    const messages = await Message.find().sort({ createdAt: -1 });
-    return NextResponse.json(messages);
+    await dbConnect()
+    const messages = await Message.find({}).sort({ createdAt: -1 })
+    return NextResponse.json({ success: true, data: messages })
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Failed to fetch messages' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    await dbConnect();
-    const data = await request.json();
+    await dbConnect()
+    const body = await request.json()
     
-    const message = await Message.create({
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      subject: data.subject,
-      message: data.message,
-      status: "unread",
-    });
+    const message = new Message({
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+      subject: body.subject,
+      message: body.message
+    })
     
-    return NextResponse.json({ success: true, message: "Message sent successfully" }, { status: 201 });
+    const savedMessage = await message.save()
+    return NextResponse.json({ success: true, data: savedMessage })
   } catch (error) {
-    return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Failed to save message' }, { status: 500 })
   }
 }

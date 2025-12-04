@@ -141,7 +141,7 @@ export default function Blog() {
                   </div>
 
                   {/* Title */}
-                  <Link href={`/blog/${post._id}`}>
+                  <Link href={`/blog/${post.slug}`}>
                     <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-700 transition-colors">
                       {post.title}
                     </h3>
@@ -165,7 +165,7 @@ export default function Blog() {
                   </div>
 
                   {/* Tags */}
-                  {post.tags.length > 0 && (
+                  {post.tags && post.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-4">
                       {post.tags.slice(0, 2).map((tag, idx) => (
                         <span
@@ -181,7 +181,7 @@ export default function Blog() {
 
                   {/* Read More Button */}
                   <Link
-                    href={`/blog/${post._id}`}
+                    href={`/blog/${post.slug}`}
                     className="inline-block text-red-700 font-semibold hover:text-red-900 transition-colors"
                   >
                     अधिक पढ्नुहोस् →

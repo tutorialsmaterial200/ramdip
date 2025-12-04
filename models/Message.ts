@@ -6,7 +6,7 @@ export interface IMessage extends Document {
   phone?: string;
   subject: string;
   message: string;
-  status: "unread" | "read" | "replied" | "archived";
+  status: "unread" | "read";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,9 +20,9 @@ const MessageSchema = new Schema<IMessage>(
     message: { type: String, required: true },
     status: { 
       type: String, 
-      enum: ["unread", "read", "replied", "archived"], 
+      enum: ["unread", "read"], 
       default: "unread" 
-    },
+    }
   },
   { timestamps: true }
 );

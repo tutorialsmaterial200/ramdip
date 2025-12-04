@@ -7,6 +7,7 @@ import Gallery from "@/components/Gallery";
 import Blog from "@/components/Blog";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import AppointmentSection from "@/components/AppointmentSection";
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
       <Vision />
       <Achievements />
       <Gallery />
+      <AppointmentSection />
       <Blog />
       <Contact />
       <Footer />

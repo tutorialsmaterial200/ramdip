@@ -52,11 +52,31 @@ export default function Contact() {
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    alert("धन्यवाद! Thank you for your message! We will get back to you soon.");
-    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+    setLoading(true);
+    
+    try {
+      const res = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        alert("धन्यवाद! Thank you for your message! We will get back to you soon.");
+        setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+      } else {
+        alert("Error sending message. Please try again.");
+      }
+    } catch (error) {
+      alert("Error sending message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (
@@ -181,10 +201,11 @@ export default function Contact() {
 
               <button
                 type="submit"
-                className="w-full inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg shadow-red-500/25"
+                disabled={loading}
+                className="w-full inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg shadow-red-500/25 disabled:opacity-50"
               >
                 <Send size={18} />
-                Send Message
+                {loading ? 'Sending...' : 'Send Message'}
               </button>
             </form>
           </div>

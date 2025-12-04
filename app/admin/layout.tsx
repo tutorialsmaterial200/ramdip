@@ -1,120 +1,123 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { LogOut, Menu, X } from "lucide-react";
+"use client"
+import { useState, useEffect } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
+import { Calendar, Users, FileText, Settings, LogOut, Menu, X } from 'lucide-react'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [admin, setAdmin] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch("/api/admin/me");
-        const data = await res.json();
+    if (pathname === '/admin/login') {
+      setIsAuthenticated(true)
+      setLoading(false)
+      return
+    }
+    
+    const token = localStorage.getItem('adminToken')
+    if (!token) {
+      router.replace('/admin/login')
+      return
+    }
+    
+    setIsAuthenticated(true)
+    setLoading(false)
+  }, [router, pathname])
 
-        if (!data.authenticated) {
-          router.push("/admin/login");
-        } else {
-          setAdmin(data.admin);
-        }
-      } catch (error) {
-        router.push("/admin/login");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken')
+    router.push('/admin/login')
+  }
 
-    checkAuth();
-  }, [router]);
+  if (loading || !isAuthenticated) {
+    return <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700"></div>
+    </div>
+  }
 
-  const handleLogout = async () => {
-    await fetch("/api/admin/logout", { method: "POST" });
-    router.push("/admin/login");
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
-      </div>
-    );
+  if (pathname === '/admin/login') {
+    return <>{children}</>
   }
 
   const menuItems = [
-    { label: "Dashboard", href: "/admin/dashboard", icon: "📊" },
-    { label: "Hero Section", href: "/admin/hero", icon: "🎯" },
-    { label: "About", href: "/admin/about", icon: "ℹ️" },
-    { label: "Achievements", href: "/admin/achievements", icon: "🏆" },
-    { label: "Gallery", href: "/admin/gallery", icon: "🖼️" },
-    { label: "Blog", href: "/admin/blog", icon: "📝" },
-    { label: "Messages", href: "/admin/messages", icon: "💬" },
-  ];
+    { href: '/admin/dashboard', label: 'ड्यासबोर्ड', icon: Settings },
+    { href: '/admin/appointments', label: 'अपोइन्टमेन्ट', icon: Calendar },
+    { href: '/admin/blog', label: 'ब्लग', icon: FileText },
+    { href: '/admin/gallery', label: 'ग्यालेरी', icon: Users },
+    { href: '/admin/messages', label: 'सन्देश', icon: Users }
+  ]
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 flex">
       {/* Sidebar */}
-      <div
-        className={`${
-          sidebarOpen ? "w-64" : "w-20"
-        } bg-gray-900 text-white transition-all duration-300 flex flex-col`}
-      >
-        {/* Logo */}
-        <div className="p-4 border-b border-gray-800 flex items-center justify-between">
-          {sidebarOpen && <span className="font-bold text-lg">CPN Admin</span>}
+      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} fixed inset-y-0 left-0 z-50 w-64 bg-red-800 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
+        <div className="flex items-center justify-between h-16 px-6 bg-red-900">
+          <h1 className="text-white font-bold text-lg">CPN Admin</h1>
           <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 hover:bg-gray-800 rounded-lg"
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden text-white"
           >
-            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+            <X size={24} />
           </button>
         </div>
-
-        {/* Menu */}
-        <nav className="flex-1 p-4 space-y-2">
+        
+        <nav className="mt-8">
           {menuItems.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+              className="flex items-center px-6 py-3 text-white hover:bg-red-700 transition-colors"
             >
-              <span className="text-xl">{item.icon}</span>
-              {sidebarOpen && <span className="text-sm">{item.label}</span>}
+              <item.icon size={20} className="mr-3" />
+              {item.label}
             </a>
           ))}
         </nav>
 
-        {/* Logout */}
-        <div className="p-4 border-t border-gray-800">
+        <div className="absolute bottom-0 w-full p-6">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 w-full rounded-lg hover:bg-red-600 transition-colors text-sm"
+            className="flex items-center w-full px-4 py-2 text-white bg-red-900 rounded hover:bg-red-700 transition-colors"
           >
-            <LogOut size={20} />
-            {sidebarOpen && <span>Logout</span>}
+            <LogOut size={20} className="mr-3" />
+            लगआउट
           </button>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Bar */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">Admin Panel</h2>
-          <div className="flex items-center gap-4">
-            <span className="text-gray-600">{admin?.name}</span>
-            <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white font-bold">
-              {admin?.name?.charAt(0).toUpperCase()}
-            </div>
+        {/* Header */}
+        <header className="bg-white shadow-sm border-b border-gray-200">
+          <div className="flex items-center justify-between h-16 px-6">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden text-gray-600"
+            >
+              <Menu size={24} />
+            </button>
+            <h2 className="text-xl font-semibold text-gray-800">
+              नेपाली कम्युनिष्ट पार्टी (माओवादी केन्द्र) - प्रशासन
+            </h2>
           </div>
-        </div>
+        </header>
 
         {/* Content */}
-        <div className="flex-1 overflow-auto p-6">{children}</div>
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+          {children}
+        </main>
       </div>
+
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
     </div>
-  );
+  )
 }

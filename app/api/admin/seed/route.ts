@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
+import dbConnect from "@/lib/mongoose";
 import Admin from "@/models/Admin";
 
 // Seed initial admin - only works once

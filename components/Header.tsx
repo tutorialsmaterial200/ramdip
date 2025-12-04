@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
-  { href: "#home", label: "Home" },
+  { href: "/", label: "Home" },
   { href: "#about", label: "About" },
   { href: "#vision", label: "Vision" },
   { href: "#achievements", label: "Achievements" },
@@ -24,12 +24,12 @@ export default function Header() {
           <a href="#home" className="flex items-center gap-3">
             <img
               src="/images/logo.jpg"
-              alt="Ramdip Acharya Logo"
+              alt="Mr. Jagat Bahadur Simkhada Logo"
               className="w-12 h-12 rounded-full object-cover border-2 border-red-600 shadow-md"
             />
             <div className="hidden sm:block">
               <span className="text-lg font-bold text-gray-900 block leading-tight">
-               Ramdip Acharya 
+               Mr. Jagat Bahadur Simkhada 
               </span>
               <span className="text-xs text-red-600">
            नेपाली कम्युनिष्ट पार्टी(माओवादी केन्द्र)
@@ -50,13 +50,21 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* CTA Button */}
-          <a
-            href="#contact"
-            className="hidden md:inline-flex px-6 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-full hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg shadow-red-500/25"
-          >
-            Join the Movement
-          </a>
+          {/* CTA Buttons */}
+          <div className="hidden md:flex items-center gap-4">
+            <a
+              href="/admin/login"
+              className="px-4 py-2 text-gray-600 hover:text-red-600 font-medium transition-colors"
+            >
+              Admin
+            </a>
+            <a
+              href="/appointments"
+              className="px-6 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-full hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg shadow-red-500/25"
+            >
+              Join the Movement
+            </a>
+          </div>
 
           {/* Mobile Menu Button */}
           <button

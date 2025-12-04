@@ -2,11 +2,9 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IGallery extends Document {
   title: string;
-  description: string;
-  category: "Events" | "Development" | "Social" | "Political";
   image: string;
-  order: number;
-  isActive: boolean;
+  description: string;
+  category: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -14,15 +12,13 @@ export interface IGallery extends Document {
 const GallerySchema = new Schema<IGallery>(
   {
     title: { type: String, required: true },
-    description: { type: String, required: true },
+    image: { type: String, required: true },
+    description: { type: String },
     category: { 
       type: String, 
-      enum: ["Events", "Development", "Social", "Political"], 
-      default: "Events" 
-    },
-    image: { type: String, required: true },
-    order: { type: Number, default: 0 },
-    isActive: { type: Boolean, default: true },
+      enum: ["event", "meeting", "rally", "other"], 
+      default: "event" 
+    }
   },
   { timestamps: true }
 );
